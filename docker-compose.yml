@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  xray:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: vless-xray
+    restart: unless-stopped
+    ports:
+      - "443:443/tcp"
+    volumes:
+      - ./server/config.json:/etc/xray/config.json:ro
+      - xray-logs:/var/log/xray
+      - shared-data:/data
+    networks:
+      - vpn-network
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "sh", "-c", "ps aux | grep xray | grep -v grep"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  telegram-bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: vless-bot
+    restart: unless-stopped
+    depends_on:
+      xray:
+        condition: service_healthy
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_IDS=${ADMIN_IDS}
+      - DEBUG=${DEBUG:-false}
+      - NODE_ENV=production
+      - SERVER_IP=${SERVER_IP:-127.0.0.1}
+      - PUBLIC_KEY=${PUBLIC_KEY:-test_public_key}
+    volumes:
+      - shared-data:/data
+      - bot-node-modules:/app/node_modules
+    networks:
+      - vpn-network
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "sh", "-c", "pgrep -f 'node.*bot.js'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  vpn-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  xray-logs:
+    driver: local
+  shared-data:
+    driver: local
+  bot-node-modules:
+    driver: local

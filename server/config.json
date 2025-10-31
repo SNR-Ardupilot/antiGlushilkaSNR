@@ -1,0 +1,81 @@
+{
+  "log": {
+    "loglevel": "warning",
+    "access": "/var/log/xray/access.log",
+    "error": "/var/log/xray/error.log"
+  },
+  "inbounds": [
+    {
+      "port": 443,
+      "protocol": "vless",
+      "tag": "vless-reality",
+      "settings": {
+        "clients": [],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "reality",
+        "realitySettings": {
+          "show": false,
+          "dest": "yandex.ru:443",
+          "xver": 0,
+          "serverNames": [
+            "yandex.ru",
+            "www.yandex.ru",
+            "ya.ru",
+            "passport.yandex.ru",
+            "mail.yandex.ru",
+            "disk.yandex.ru",
+            "music.yandex.ru"
+          ],
+          "privateKey": "8E-vX3tx0R_ee_jMoJZmcJhcUbG_dcVU2Hywo1D-KA4",
+          "shortIds": [
+            "",
+            "0123456789abcdef"
+          ]
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct",
+      "settings": {
+        "domainStrategy": "UseIPv4"
+      }
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "block"
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "block"
+      }
+    ],
+    "domainStrategy": "AsIs"
+  }
+}
