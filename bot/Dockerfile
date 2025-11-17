@@ -4,8 +4,8 @@ FROM node:20-alpine AS builder
 LABEL maintainer="VLESS VPN Project"
 LABEL description="Telegram bot for VLESS VPN configuration distribution"
 
-# Установка зависимостей для сборки
-RUN apk add --no-cache python3 make g++
+# Установка зависимостей для сборки (без Python - не требуется)
+RUN apk add --no-cache make g++
 
 WORKDIR /app
 
