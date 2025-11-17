@@ -10,9 +10,8 @@ services:
     ports:
       - "443:443/tcp"
     volumes:
-      - ./server/config.json:/etc/xray/config.json:ro
+      - shared-data:/etc/xray
       - xray-logs:/var/log/xray
-      - shared-data:/data
     networks:
       - vpn-network
     cap_drop:
@@ -52,6 +51,7 @@ services:
       - NODE_ENV=production
       - SERVER_IP=${SERVER_IP:-127.0.0.1}
       - PUBLIC_KEY=${PUBLIC_KEY:-test_public_key}
+      - PRIVATE_KEY=${PRIVATE_KEY}
     volumes:
       - shared-data:/data
       - bot-node-modules:/app/node_modules

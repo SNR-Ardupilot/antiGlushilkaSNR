@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
 
-# Инициализация /data/config.json если не существует
+# Инициализация config.json если не существует (shared с xray)
 if [ ! -f /data/config.json ]; then
-  echo "[INFO] Создание начального config.json в /data/"
+  echo "[INFO] Создание начального config.json в /data/ (будет использоваться Xray)"
   cat > /data/config.json <<'EOF'
 {
   "log": {
@@ -89,6 +89,11 @@ if [ ! -f /data/config.json ]; then
   }
 }
 EOF
+  # Замена PLACEHOLDER на реальный приватный ключ
+  if [ -n "$PRIVATE_KEY" ]; then
+    sed -i "s/PLACEHOLDER_PRIVATE_KEY/$PRIVATE_KEY/g" /data/config.json
+    echo "[INFO] Приватный ключ установлен в config.json"
+  fi
 fi
 
 # Инициализация users.json если не существует
