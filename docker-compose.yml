@@ -10,7 +10,7 @@ services:
     ports:
       - "443:443/tcp"
     volumes:
-      - shared-data:/etc/xray
+      - ./data:/etc/xray
       - xray-logs:/var/log/xray
     networks:
       - vpn-network
@@ -53,7 +53,7 @@ services:
       - PUBLIC_KEY=${PUBLIC_KEY:-test_public_key}
       - PRIVATE_KEY=${PRIVATE_KEY}
     volumes:
-      - shared-data:/data
+      - ./data:/data
       - bot-node-modules:/app/node_modules
     networks:
       - vpn-network
@@ -85,8 +85,6 @@ networks:
 
 volumes:
   xray-logs:
-    driver: local
-  shared-data:
     driver: local
   bot-node-modules:
     driver: local
