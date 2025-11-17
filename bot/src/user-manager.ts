@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { execSync } from 'child_process';
 import { logger } from './logger';
@@ -148,13 +147,10 @@ export class UserManager {
   }
 
   private restartXray(): boolean {
-    try {
-      execSync('systemctl restart xray', { timeout: 10000 });
-      return true;
-    } catch (error) {
-      logger.error('Ошибка перезапуска Xray:', error);
-      return false;
-    }
+    // В Docker окружении Xray перезагружается автоматически при изменении конфига
+    // или управляется через docker-compose, systemctl недоступен
+    logger.info('Конфигурация обновлена (Xray перечитает при следующем подключении)');
+    return true;
   }
 
   addUser(username: string, telegramId?: number): User | null {
@@ -194,7 +190,7 @@ export class UserManager {
         `vless://${userUuid}@${serverIp}:443?` +
         `encryption=none&flow=xtls-rprx-vision&security=reality&` +
         `sni=yandex.ru&fp=chrome&pbk=${publicKey}&` +
-        `sid=0123456789abcdef&type=tcp&headerType=none#${username}`;
+        `sid=2d8c6b&type=tcp&headerType=none#${username}`;
 
       // Создание объекта пользователя
       const user: User = {

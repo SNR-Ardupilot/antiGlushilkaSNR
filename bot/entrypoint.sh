@@ -1,3 +1,10 @@
+#!/bin/sh
+set -e
+
+# Инициализация /data/config.json если не существует
+if [ ! -f /data/config.json ]; then
+  echo "[INFO] Создание начального config.json в /data/"
+  cat > /data/config.json <<'EOF'
 {
   "log": {
     "loglevel": "warning",
@@ -30,7 +37,7 @@
             "music.yandex.ru",
             "market.yandex.ru"
           ],
-          "privateKey": "UBMR-cU5wZLhCPMzjseQ3vLkfv3ZrA9JOYzgQ3vIUnE",
+          "privateKey": "PLACEHOLDER_PRIVATE_KEY",
           "shortIds": [
             "",
             "0123456789abcdef",
@@ -81,3 +88,25 @@
     "domainStrategy": "AsIs"
   }
 }
+EOF
+fi
+
+# Инициализация users.json если не существует
+if [ ! -f /data/users.json ]; then
+  echo "[INFO] Создание начальной базы users.json"
+  echo '{"users":[]}' > /data/users.json
+fi
+
+# Инициализация server_info.txt если не существует
+if [ ! -f /data/server_info.txt ]; then
+  echo "[INFO] Создание server_info.txt"
+  cat > /data/server_info.txt <<EOF
+Server IP: ${SERVER_IP:-127.0.0.1}
+Public Key: ${PUBLIC_KEY:-test_public_key}
+Private Key: ${PRIVATE_KEY:-test_private_key}
+Generated: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+EOF
+fi
+
+echo "[INFO] Запуск Telegram бота..."
+exec node dist/bot.js

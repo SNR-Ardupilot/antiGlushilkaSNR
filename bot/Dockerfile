@@ -41,8 +41,12 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
+# Копирование entrypoint скрипта
+COPY entrypoint.sh /app/entrypoint.sh
+
 # Установка прав
-RUN chown -R node:node /app
+RUN chown -R node:node /app && \
+    chmod +x /app/entrypoint.sh
 
 # Переключение на непривилегированного пользователя
 USER node
@@ -51,5 +55,5 @@ USER node
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD pgrep -f "node.*bot.js" || exit 1
 
-# Запуск бота
-CMD ["node", "dist/bot.js"]
+# Запуск бота через entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
