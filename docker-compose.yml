@@ -7,6 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: vless-xray
     restart: unless-stopped
+    depends_on:
+      telegram-bot:
+        condition: service_started
     ports:
       - "443:443/tcp"
     volumes:
@@ -41,9 +44,6 @@ services:
       dockerfile: Dockerfile
     container_name: vless-bot
     restart: unless-stopped
-    depends_on:
-      xray:
-        condition: service_healthy
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - ADMIN_IDS=${ADMIN_IDS}
