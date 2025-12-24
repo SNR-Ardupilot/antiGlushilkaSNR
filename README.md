@@ -33,7 +33,7 @@
 
 ```bash
 # Клонируйте репозиторий
-git clone https://github.com/yourusername/yandex-vless-vpn.git
+git clone https://github.com/SNR-Ardupilot/yandex-vless-vpn.git
 cd yandex-vless-vpn
 
 # Запустите автоматический деплой
