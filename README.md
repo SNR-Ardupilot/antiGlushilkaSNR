@@ -61,7 +61,7 @@ chmod +x scripts/deploy.sh
 ssh root@your_server_ip
 
 # Скачайте проект
-git clone https://github.com/yourusername/yandex-vless-vpn.git
+git clone https://github.com/SNR-Ardupilot/antiGlushilkaSNR.git
 cd yandex-vless-vpn
 
 # Запустите установку сервера
